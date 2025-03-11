@@ -91,14 +91,10 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                 }
 
                 /// Shorthand for (0, 0, 1).
-                pub fn forward() Self {
-                    return new(0, 0, 1);
-                }
+                pub const forward = new(0, 0, 1);
 
                 /// Shorthand for (0, 0, -1).
-                pub fn back() Self {
-                    return forward().negate();
-                }
+                pub const back = forward.negate();
 
                 /// Construct the cross product (as vector) from two vectors.
                 pub fn cross(first_vector: Self, second_vector: Self) Self {
@@ -139,14 +135,10 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                 }
 
                 /// Shorthand for (0, 0, 1, 0).
-                pub fn forward() Self {
-                    return new(0, 0, 1, 0);
-                }
+                pub const forward = new(0, 0, 1, 0);
 
                 /// Shorthand for (0, 0, -1, 0).
-                pub fn back() Self {
-                    return forward().negate();
-                }
+                pub const back = forward.negate();
 
                 pub inline fn z(self: Self) T {
                     return self.data[2];
@@ -206,44 +198,32 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
         }
 
         /// Shorthand for (0..).
-        pub fn zero() Self {
-            return set(0);
-        }
+        pub const zero = set(0);
 
         /// Shorthand for (1..).
-        pub fn one() Self {
-            return set(1);
-        }
+        pub const one = set(1);
 
         /// Shorthand for (0, 1).
-        pub fn up() Self {
-            return switch (dimensions) {
-                2 => Self.new(0, 1),
-                3 => Self.new(0, 1, 0),
-                4 => Self.new(0, 1, 0, 0),
-                else => unreachable,
-            };
-        }
+        pub const up = switch (dimensions) {
+            2 => Self.new(0, 1),
+            3 => Self.new(0, 1, 0),
+            4 => Self.new(0, 1, 0, 0),
+            else => unreachable,
+        };
 
         /// Shorthand for (0, -1).
-        pub fn down() Self {
-            return up().negate();
-        }
+        pub const down = up.negate();
 
         /// Shorthand for (1, 0).
-        pub fn right() Self {
-            return switch (dimensions) {
-                2 => Self.new(1, 0),
-                3 => Self.new(1, 0, 0),
-                4 => Self.new(1, 0, 0, 0),
-                else => unreachable,
-            };
-        }
+        pub const right = switch (dimensions) {
+            2 => Self.new(1, 0),
+            3 => Self.new(1, 0, 0),
+            4 => Self.new(1, 0, 0, 0),
+            else => unreachable,
+        };
 
         /// Shorthand for (-1, 0).
-        pub fn left() Self {
-            return right().negate();
-        }
+        pub const left = right.negate();
 
         /// Negate the given vector.
         pub fn negate(self: Self) Self {
@@ -367,7 +347,7 @@ pub fn GenericVector(comptime dimensions: comptime_int, comptime T: type) type {
                 return self.data[@intFromEnum(@field(Component, &.{comps[0]}))];
             }
 
-            var result = GenericVector(comps.len, T).zero();
+            var result = GenericVector(comps.len, T).zero;
             inline for (comps, 0..) |comp, i| {
                 result.data[i] = self.data[@intFromEnum(@field(Component, &.{comp}))];
             }
@@ -456,22 +436,22 @@ test "zalgebra.Vectors.set" {
 test "zalgebra.Vectors.add" {
     // Vec2
     {
-        const a = Vec2.one();
-        const b = Vec2.one();
+        const a = Vec2.one;
+        const b = Vec2.one;
         try expectEqual(a.add(b), Vec2.set(2));
     }
 
     // Vec3
     {
-        const a = Vec3.one();
-        const b = Vec3.one();
+        const a = Vec3.one;
+        const b = Vec3.one;
         try expectEqual(a.add(b), Vec3.set(2));
     }
 
     // Vec4
     {
-        const a = Vec4.one();
-        const b = Vec4.one();
+        const a = Vec4.one;
+        const b = Vec4.one;
         try expectEqual(a.add(b), Vec4.set(2));
     }
 }
@@ -502,10 +482,10 @@ test "zalgebra.Vectors.negate" {
 test "zalgebra.Vectors.getAngle" {
     // Vec2
     {
-        const a = Vec2.right();
-        const b = Vec2.up();
-        const c = Vec2.left();
-        const d = Vec2.one();
+        const a = Vec2.right;
+        const b = Vec2.up;
+        const c = Vec2.left;
+        const d = Vec2.one;
 
         try expectEqual(a.getAngle(a), 0);
         try expectEqual(a.getAngle(b), 90);
@@ -515,9 +495,9 @@ test "zalgebra.Vectors.getAngle" {
 
     // Vec3
     {
-        const a = Vec3.right();
-        const b = Vec3.up();
-        const c = Vec3.left();
+        const a = Vec3.right;
+        const b = Vec3.up;
+        const c = Vec3.left;
         const d = Vec3.new(1, 1, 0);
 
         try expectEqual(a.getAngle(a), 0);
@@ -528,9 +508,9 @@ test "zalgebra.Vectors.getAngle" {
 
     // Vec4
     {
-        const a = Vec4.right();
-        const b = Vec4.up();
-        const c = Vec4.left();
+        const a = Vec4.right;
+        const b = Vec4.up;
+        const c = Vec4.left;
         const d = Vec4.new(1, 1, 0, 0);
 
         try expectEqual(a.getAngle(a), 0);
@@ -543,7 +523,7 @@ test "zalgebra.Vectors.getAngle" {
 test "zalgebra.Vectors.toArray" {
     //Vec2
     {
-        const a = Vec2.up().toArray();
+        const a = Vec2.up.toArray();
         const b = [_]f32{ 0, 1 };
 
         try std.testing.expectEqualSlices(f32, &a, &b);
@@ -551,7 +531,7 @@ test "zalgebra.Vectors.toArray" {
 
     //Vec3
     {
-        const a = Vec3.up().toArray();
+        const a = Vec3.up.toArray();
         const b = [_]f32{ 0, 1, 0 };
 
         try std.testing.expectEqualSlices(f32, &a, &b);
@@ -559,7 +539,7 @@ test "zalgebra.Vectors.toArray" {
 
     //Vec4
     {
-        const a = Vec4.up().toArray();
+        const a = Vec4.up.toArray();
         const b = [_]f32{ 0, 1, 0, 0 };
 
         try std.testing.expectEqualSlices(f32, &a, &b);
@@ -589,8 +569,8 @@ test "zalgebra.Vectors.length" {
 test "zalgebra.Vectors.distance" {
     // Vec2
     {
-        const a = Vec2.zero();
-        const b = Vec2.left();
+        const a = Vec2.zero;
+        const b = Vec2.left;
         const c = Vec2.new(0, 5);
 
         try expectEqual(a.distance(b), 1);
@@ -599,8 +579,8 @@ test "zalgebra.Vectors.distance" {
 
     // Vec3
     {
-        const a = Vec3.zero();
-        const b = Vec3.left();
+        const a = Vec3.zero;
+        const b = Vec3.left;
         const c = Vec3.new(0, 5, 0);
 
         try expectEqual(a.distance(b), 1);
@@ -609,8 +589,8 @@ test "zalgebra.Vectors.distance" {
 
     // Vec4
     {
-        const a = Vec4.zero();
-        const b = Vec4.left();
+        const a = Vec4.zero;
+        const b = Vec4.left;
         const c = Vec4.new(0, 5, 0, 0);
 
         try expectEqual(a.distance(b), 1);
@@ -850,7 +830,7 @@ test "zalgebra.Vectors.cross" {
     const result_1 = Vec3.cross(a, c);
     const result_2 = Vec3.cross(a, b);
 
-    try expectEqual(result_1, Vec3.zero());
+    try expectEqual(result_1, Vec3.zero);
     try expectEqual(result_2, Vec3.new(-10.1650009, 7.75, -1.32499980));
 }
 
